@@ -55,6 +55,9 @@ button:hover{filter:brightness(1.06)}
 /* Output area */
 .out{margin-top:18px;padding:12px;border-radius:10px;background:transparent}
 
+/* Divider used after the disclaimer */
+.divider{border:0;height:1px;background:rgba(255,255,255,0.06);margin:12px 0 18px;border-radius:1px}
+
 /* Code blocks: keep highlight.js token colors but remove the blue/solid background */
 pre{
   margin:8px 0;

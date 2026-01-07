@@ -11,7 +11,10 @@
   <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-  <h1>google slides iframe moment generator</h1>
+  <h1>google slides iframe generator</h1>
+
+  <div class="hint disclaimer">Disclaimer: This site does not provide guidance to bypass web filters, nor does it have the capability to create such bypasses on its own. Use at your own risk!</div>
+    <hr class="divider" />
 
   <label for="url">Website to embed in the iframe:</label>
   <input id="url" type="text" placeholder="example.com or https://example.com" autocomplete="off" />
@@ -106,6 +109,14 @@ function showTypingDialog() {
     const outEl = document.getElementById("out");
     const codeGsEl = document.getElementById("codeGs");
     const indexHtmlEl = document.getElementById("indexHtml");
+
+    // Allow Enter in the input to trigger generation
+    urlEl.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter') {
+        e.preventDefault();
+        document.getElementById('gen').click();
+      }
+    });
 
     document.getElementById("gen").addEventListener("click", () => {
       const url = normalizeUrl(urlEl.value);
