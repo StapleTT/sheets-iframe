@@ -1,0 +1,101 @@
+:root {
+  --bg: #121216;
+  --panel: #1e1f22;
+  --text: #e6eef6;
+  --muted: #9aa4af;
+  --btn: #2a2c2f; /* button = slightly lighter than background */
+}
+
+/* Base */
+html,body { height: 100%; }
+body {
+  margin: 20px;
+  background: var(--bg);
+  color: var(--text);
+  font-family: "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, monospace;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* Ensure all common text elements use JetBrains Mono */
+h1,h2,h3,label,button,input,textarea,select,pre,code{
+  font-family: "JetBrains Mono", ui-monospace, monospace;
+}
+
+/* Layout & form elements */
+h1{font-size:1.4rem;margin:0 0 12px}
+label{display:block;margin-bottom:6px;color:var(--muted)}
+input[type="text"]{
+  width:100%;
+  max-width:720px;
+  padding:8px 10px;
+  border-radius:8px;
+  border:1px solid rgba(255,255,255,0.04);
+  background:var(--panel);
+  color:var(--text);
+  outline:none;
+}
+.hint{color:var(--muted);font-size:0.9rem;margin:6px 0 14px}
+
+.row{display:flex;gap:8px;align-items:center;margin:12px 0}
+
+/* Buttons: gray slightly lighter than background, rounded, shadow */
+button{
+  background:var(--btn);
+  color:var(--text);
+  border:1px solid rgba(255,255,255,0.03);
+  padding:8px 14px;
+  border-radius:10px;
+  box-shadow:0 6px 18px rgba(0,0,0,0.6);
+  cursor:pointer;
+}
+button.smallbtn{padding:6px 10px;font-size:0.9rem}
+button:hover{filter:brightness(1.06)}
+
+/* Output area */
+.out{margin-top:18px;padding:12px;border-radius:10px;background:transparent}
+
+/* Code blocks: keep highlight.js token colors but remove the blue/solid background */
+pre{
+  margin:8px 0;
+  padding:12px;
+  border-radius:8px;
+  overflow:auto;
+  background:transparent;
+  color:var(--text);
+  font-family:"JetBrains Mono", ui-monospace, monospace;
+  font-size:0.95rem;
+  line-height:1.45;
+  border:1px solid rgba(255,255,255,0.03);
+
+  /* Make code blocks only as wide as their content */
+  display: inline-block;
+  width: auto;
+  max-width: 100%;
+  white-space: pre; /* preserve formatting; long lines will scroll horizontally */
+}
+
+/* inline code */
+code{
+  background:transparent;
+  color:inherit;
+  font-family:"JetBrains Mono", ui-monospace, monospace;
+}
+
+/* highlight.js override: remove its background while preserving token colors */
+.hljs{
+  background:transparent !important;
+  padding:0 !important;
+  color:inherit;
+}
+
+/* copied state for buttons (turns green briefly) */
+button.copied{
+  background:#2ecc71 !important;
+  color:#042;
+  box-shadow:0 6px 18px rgba(46,204,113,0.18);
+  transition:background 120ms ease;
+}
+
+/* subtle selection */
+.hljs::selection, pre::selection{background:rgba(255,255,255,0.06)}

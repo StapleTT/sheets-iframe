@@ -1,0 +1,160 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Google Slides Iframe Apps Script Generator</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/atom-one-dark.min.css">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <h1>Google Slides Iframe Apps Script Generator</h1>
+
+  <label for="url">Website to embed in the iframe:</label>
+  <input id="url" type="text" placeholder="example.com or https://example.com" autocomplete="off" />
+  <div class="hint">
+    Tip: You can paste a full URL. If you leave off <code>https://</code>, this generator will add it.
+  </div>
+
+  <div class="row">
+    <button id="gen">Generate</button>
+    <button id="clear" class="smallbtn" type="button">Clear</button>
+  </div>
+
+  <div class="out" id="out" style="display:none;">
+    <h2>Output</h2>
+
+    <h3>Code.gs</h3>
+    <pre><code id="codeGs"></code></pre>
+    <div class="row">
+      <button id="copyGs" class="smallbtn" type="button">Copy Code.gs</button>
+    </div>
+
+    <h3>index.html</h3>
+    <pre><code id="indexHtml"></code></pre>
+    <div class="row">
+      <button id="copyHtml" class="smallbtn" type="button">Copy index.html</button>
+    </div>
+  </div>
+  
+  <script>
+    function normalizeUrl(input) {
+      let s = (input || "").trim();
+      if (!s) return "";
+      if (!/^https?:\/\//i.test(s)) s = "https://" + s;
+      return s;
+    }
+
+    function escapeHtml(s) {
+      return s.replace(/[&<>"']/g, ch => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[ch]));
+    }
+
+    function buildOutputs(url) {
+      const codeGs =
+`function onOpen() {
+  SlidesApp.getUi().createMenu('...')
+    .addItem('open the iframe', 'showTypingDialog')
+    .addToUi();
+}
+
+function showTypingDialog() {
+  var html = HtmlService.createHtmlOutputFromFile('index')
+      .setWidth(1366)
+      .setHeight(768);
+  SlidesApp.getUi().showModalDialog(html, 'google slides iframe moment');
+}
+`;
+
+      const indexHtml =
+`<!DOCTYPE html>
+<html>
+  <head>
+    <base target="_top">
+  </head>
+  <body style="margin:0; padding:0; overflow:hidden;">
+    <iframe src="${url}" style="position:fixed; top:0; left:0; width:100vw; height:100vh; border:none; z-index:999999;"></iframe>
+  </body>
+</html>
+`;
+
+      return { codeGs, indexHtml };
+    }
+
+    async function copyText(text) {
+      try {
+        await navigator.clipboard.writeText(text);
+        return true;
+      } catch {
+        try {
+          const ta = document.createElement("textarea");
+          ta.value = text;
+          document.body.appendChild(ta);
+          ta.select();
+          document.execCommand("copy");
+          document.body.removeChild(ta);
+          return true;
+        } catch {
+          return false;
+        }
+      }
+    }
+
+    const urlEl = document.getElementById("url");
+    const outEl = document.getElementById("out");
+    const codeGsEl = document.getElementById("codeGs");
+    const indexHtmlEl = document.getElementById("indexHtml");
+
+    document.getElementById("gen").addEventListener("click", () => {
+      const url = normalizeUrl(urlEl.value);
+      if (!url) {
+        alert("Please enter a website URL.");
+        return;
+      }
+
+      const { codeGs, indexHtml } = buildOutputs(url);
+
+      codeGsEl.textContent = codeGs;
+      indexHtmlEl.textContent = indexHtml;
+      try {
+        if (window.hljs) {
+          hljs.highlightElement(codeGsEl);
+          hljs.highlightElement(indexHtmlEl);
+        }
+      } catch (e) {}
+
+      outEl.style.display = "block";
+    });
+
+    document.getElementById("clear").addEventListener("click", () => {
+      urlEl.value = "";
+      outEl.style.display = "none";
+      codeGsEl.textContent = "";
+      indexHtmlEl.textContent = "";
+      urlEl.focus();
+    });
+
+    document.getElementById("copyGs").addEventListener("click", async () => {
+      const btn = document.getElementById("copyGs");
+      const original = btn.textContent;
+      const ok = await copyText(codeGsEl.textContent);
+      btn.textContent = ok ? "Copied!" : "Failed";
+      btn.classList.add("copied");
+      setTimeout(() => { btn.textContent = original; btn.classList.remove("copied"); }, 1500);
+    });
+
+    document.getElementById("copyHtml").addEventListener("click", async () => {
+      const btn = document.getElementById("copyHtml");
+      const original = btn.textContent;
+      const ok = await copyText(indexHtmlEl.textContent);
+      btn.textContent = ok ? "Copied!" : "Failed";
+      btn.classList.add("copied");
+      setTimeout(() => { btn.textContent = original; btn.classList.remove("copied"); }, 1500);
+    });
+  </script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/highlight.min.js"></script>
+  <script>window.hljs && hljs.configure({ignoreUnescapedHTML:true});</script>
+</body>
+</html>
